@@ -1,0 +1,90 @@
+{
+  "dataSources" : [
+    {
+      "spec" : {
+        "dataSchema" : {
+          "dataSource" : "twitter-stream",
+          "parser" : {
+            "type" : "string",
+            "parseSpec" : {
+              "timestampSpec" : {
+                "column" : "created_at",
+                "format" : "auto"
+              },
+              "dimensionsSpec" : {
+                "dimensions" : [
+                  "country",
+                  "hashtags",
+                  "iso_code",
+                  "topic",
+                  "lang",
+                  "text"
+                ],
+                "dimensionExclusions" : []
+              },
+              "format" : "json"
+            }
+          },
+          "granularitySpec" : {
+            "type" : "uniform",
+            "segmentGranularity" : "month",
+            "queryGranularity" : "none"
+          },
+          "metricsSpec" : [
+            {
+              "type" : "count",
+              "name" : "tweets"
+            },
+            {
+              "name" : "Favorites",
+              "type" : "doubleSum",
+              "fieldName" : "favorite_count"
+            },
+            {
+              "fieldName" : "followers_count",
+              "name" : "Followers",
+              "type" : "doubleSum"
+            },
+            {
+              "type" : "doubleSum",
+              "name" : "Friends",
+              "fieldName" : "friends_count"
+            },
+            {
+              "type" : "doubleSum",
+              "name" : "Retweets",
+              "fieldName" : "retweet_count"
+            },
+            {
+              "type" : "doubleSum",
+              "name" : "Statuses",
+              "fieldName" : "statuses_count"
+            }
+          ]
+        },
+        "ioConfig" : {
+          "type" : "realtime"
+        },
+        "tuningConfig" : {
+          "type" : "realtime",
+          "maxRowsInMemory" : "50000",
+          "intermediatePersistPeriod" : "PT10M",
+          "windowPeriod" : "PT1000000M"
+        }
+      },
+      "properties" : {
+        "task.partitions" : "1",
+        "task.replicants" : "1"
+      }
+    }
+  ],
+  "properties" : {
+    "zookeeper.connect" : "localhost",
+    "druid.discovery.curator.path" : "/druid/discovery",
+    "druid.selectors.indexing.serviceName" : "druid/overlord",
+    "http.port" : "8200",
+    "http.threads" : "40",
+    "serialization.format" : "smile",
+    "druidBeam.taskLocator": "overlord"
+  }
+}
